@@ -1,0 +1,51 @@
+name: Github Action Configuration for API Test Suite
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      ENVIRONMENT: "dev"
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up JDK 11
+        uses: actions/setup-java@v2
+        with:
+          java-version: '11'
+          distribution: 'adopt'
+
+      - name: Set up Gradle
+        uses: gradle/gradle-build-action@v2
+
+      - name: Build with Gradle
+        run: ./gradlew build
+
+      - name: Run tests
+        run: ./gradlew test -PENVIRONMENT=$ENVIRONMENT
+      - name: Extract test results
+        id: test_results
+        run: |
+          passes=$(grep -o '<testcase' build/test-results/test/TEST-*.xml | wc -l)
+          failures=$(grep -o '<failure' build/test-results/test/TEST-*.xml | wc -l)
+          echo "::set-output name=passes::$passes"
+          echo "::set-output name=failures::$failures"
+
+      - name: Send notification to Slack
+        uses: slackapi/slack-github-action@v1.24.0
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        with:
+          payload: |
+            {
+              "text": "Test Results: ${{ steps.test_results.outputs.passes }} passed, ${{ steps.test_results.outputs.failures }} failed"
+            }
+
+      - name: Upload Allure Report Results
+        uses: actions/upload-artifact@v2
+        with:
+          name: allure report
+          path: build/allure-results
