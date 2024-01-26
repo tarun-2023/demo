@@ -24,5 +24,10 @@ public class UserSignupTest extends BaseAPITest {
         Assert.assertEquals(userSignupResponse.getData().getUser().getEmail(), email);
         Assert.assertEquals(userSignupResponse.getData().getUser().getRole(), "authenticated");
         Assert.assertNotNull(userSignupResponse.getData().getSession().getAccessToken());
+
+        // Asserting the status code
+        Assert.assertEquals(userSignupResponse.getStatusCode(), 201);
+        Assert.assertEquals(userSignupResponse.getHeaders().get("Content-Type"),  "application/json; charset=utf-8");
+        Assert.assertEquals(userSignupResponse.getHeaders().get("Server"), "Google Frontend");
     }
 }

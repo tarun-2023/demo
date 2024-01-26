@@ -5,6 +5,7 @@ import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import models.request.SignupRequestModel;
 import models.response.SignupResponseModel;
+import utilities.ApiResponseDeserializer;
 
 public class UserClient {
 
@@ -16,12 +17,12 @@ public class UserClient {
                 .build();
 
         // Act
-        SignupResponseModel signupResponseModel = RestAssured.given()
+        Response signupResponse = RestAssured.given()
                 .contentType(ContentType.JSON)
                 .body(signupRequestModel)
-                .post(signupResourceEndpoint).as(SignupResponseModel.class);
+                .post(signupResourceEndpoint);
 
-        return signupResponseModel;
+        return ApiResponseDeserializer.deserializeResponse(signupResponse, SignupResponseModel.class);
     }
 
 }
