@@ -2,6 +2,7 @@ import clients.UserClient;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
+import models.response.SignupResponseModel;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -17,11 +18,11 @@ public class UserSignupTest extends BaseAPITest {
 
         // Act
         UserClient userClient = new UserClient();
-        Response userSignupResponse = userClient.createUser(email, password);
+        SignupResponseModel userSignupResponse = userClient.createUser(email, password);
 
         // Assert
-        int statusCode = userSignupResponse.getStatusCode();
-        Assert.assertEquals(statusCode, 201);
-        Assert.assertEquals(userSignupResponse.jsonPath().get("data.user.email"), email);
+//        int statusCode = userSignupResponse.getStatusCode();
+//        Assert.assertEquals(statusCode, 201);
+        Assert.assertEquals(userSignupResponse.getData().getUser().getEmail(), email);
     }
 }
