@@ -1,13 +1,13 @@
 import clients.CartClient;
 import clients.ProductClient;
 import clients.UserClient;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import models.response.AddItemToCartResponseModel;
 import models.response.CreateCartResponseModel;
 import models.response.ProductFetchResponseModel;
 import models.response.SignupResponseModel;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+import utilities.DataLoader;
 
 import java.util.UUID;
 
@@ -16,13 +16,15 @@ public class CartTest extends BaseAPITest {
     @Test
     public void addItemToCart() {
         String email = UUID.randomUUID() + "@ultralesson.com";
-        String password = "1234567890";
+        String passwordFromDataLoader = DataLoader.getData("createCartData", "password");
+        String productIDFromDataLoader = DataLoader.getData("createCartData", "product_id");
+        int quantityFromDataLoader = Integer.parseInt (DataLoader.getData("createCartData", "quantity"));
 
         UserClient userClient = new UserClient();
         ProductClient productClient = new ProductClient();
         CartClient cartClient = new CartClient();
 
-        SignupResponseModel userSignupResponse = userClient.createUser(email, password);
+        SignupResponseModel userSignupResponse = userClient.createUser(email, passwordFromDataLoader);
 
         String accessToken = userSignupResponse.getData().getSession().getAccessToken();
 
@@ -32,7 +34,7 @@ public class CartTest extends BaseAPITest {
         CreateCartResponseModel createCartResponseModel = cartClient.createCart(accessToken);
         String cartID = createCartResponseModel.getCartID();
 
-        AddItemToCartResponseModel addItemToCartResponseModel = cartClient.addItemCart(productId, accessToken, cartID, 10);
+        AddItemToCartResponseModel addItemToCartResponseModel = cartClient.addItemCart(productIDFromDataLoader, accessToken, cartID, quantityFromDataLoader);
 
         // Assertions
         Assert.assertNotNull(addItemToCartResponseModel.getCartItemID());

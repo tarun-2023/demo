@@ -7,11 +7,12 @@ import models.request.AddCartItemRequestModel;
 import models.response.AddItemToCartResponseModel;
 import models.response.CreateCartResponseModel;
 import utilities.ApiResponseDeserializer;
+import utilities.EndpointsConfig;
 
 public class CartClient {
 
     public CreateCartResponseModel createCart(String accessToken) {
-        String createCartEndpoint = "/api/cart";
+        String createCartEndpoint = EndpointsConfig.getEndpoint("cart", "createCart");
         Response response = RestAssured.given()
                 .header("Authorization", String.format("Bearer %s", accessToken))
                 .contentType(ContentType.JSON)
@@ -20,7 +21,8 @@ public class CartClient {
     }
 
     public AddItemToCartResponseModel addItemCart(String productID, String accessToken, String cartID, int quantity) {
-        String addItemToCartResourceEndpoint = String.format("/api/cart/%s/items", cartID);
+        String addItemToCartResourceEndpoint = EndpointsConfig.getEndpoint("cart", "addCartItem");
+        addItemToCartResourceEndpoint = addItemToCartResourceEndpoint.replace("{CART_ID}", cartID);
         AddCartItemRequestModel addCartItemRequestModel = AddCartItemRequestModel.builder()
                 .productID(productID)
                 .quantity(quantity)
