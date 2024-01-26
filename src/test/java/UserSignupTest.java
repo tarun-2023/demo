@@ -21,8 +21,8 @@ public class UserSignupTest extends BaseAPITest {
         SignupResponseModel userSignupResponse = userClient.createUser(email, password);
 
         // Assert
-//        int statusCode = userSignupResponse.getStatusCode();
-//        Assert.assertEquals(statusCode, 201);
         Assert.assertEquals(userSignupResponse.getData().getUser().getEmail(), email);
+        Assert.assertEquals(userSignupResponse.getData().getUser().getRole(), "authenticated");
+        Assert.assertNotNull(userSignupResponse.getData().getSession().getAccessToken());
     }
 }
